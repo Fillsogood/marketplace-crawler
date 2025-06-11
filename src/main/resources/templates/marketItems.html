@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>중고 게시글 목록</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      padding: 30px;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form.filter-form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    select, button {
+      padding: 8px 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    li {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    li:hover {
+      transform: scale(1.02);
+    }
+
+    img.thumb {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2>📦 크롤링된 중고 게시글</h2>
+  <a href="/watches" style="background-color: #28a745; color: white; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold;">감시 상품 관리</a>
+</div>
+
+<form th:action="@{/items}" method="get" class="filter-form">
+  <label>
+    상품 선택:
+    <select name="watchId">
+      <option value="" disabled selected>상품 선택</option>
+      <option th:each="watch : ${watches}"
+              th:value="${watch.id}"
+              th:text="${watch.productName}"
+              th:selected="${watch.id == selectedWatchId}">
+      </option>
+    </select>
+  </label>
+
+  <label>
+    가격 정렬:
+    <select name="sort">
+      <option value="priceAsc" th:selected="${sort == 'priceAsc'}">낮은 가격 순</option>
+      <option value="priceDesc" th:selected="${sort == 'priceDesc'}">높은 가격 순</option>
+    </select>
+  </label>
+
+  <button type="submit">🔍 필터 적용</button>
+</form>
+
+<ul>
+  <li th:each="item : ${items}">
+    <img th:src="${item.imageUrl}" alt="썸네일" class="thumb"/>
+    <div class="info">
+      <a th:href="${item.link}" class="title" target="_blank" th:text="${item.title}"></a>
+      <span class="meta" th:text="${item.price + '원'}"></span>
+      <span class="meta" th:text="${item.site}"></span>
+    </div>
+  </li>
+</ul>
+
+</body>
+</html>

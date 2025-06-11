@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>감시 상품 목록</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    form.add-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    button, .link-button {
+      padding: 10px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    button:hover, .link-button:hover {
+      opacity: 0.9;
+    }
+
+    .crawl-btn {
+      background-color: #28a745;
+    }
+
+    .crawl-btn.busy {
+      background-color: #dc3545;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: white;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: box-shadow 0.2s ease-in-out;
+    }
+
+    li:hover {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .product-name {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .timestamp {
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="section-header">
+  <h2>감시할 상품 등록</h2>
+</div>
+
+<form th:action="@{/watches}" method="post" class="add-form">
+  <input type="text" name="productName" placeholder="상품명을 입력하세요" required />
+  <button type="submit">➕ 등록</button>
+</form>
+
+<div class="section-header">
+  <h2>📡 감시 중인 상품 목록</h2>
+  <a href="/items" class="link-button">📦 전체 결과 보기</a>
+</div>
+
+<ul>
+  <li th:each="watch : ${watches}">
+    <div class="left">
+      <span class="product-name" th:text="${watch.productName}"></span>
+      <span class="timestamp" th:text="${#temporals.format(watch.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+    </div>
+    <div class="actions">
+      <form th:action="@{/crawl/single}" method="get">
+        <input type="hidden" name="watchId" th:value="${watch.id}" />
+        <button type="submit"
+                th:classappend="${watch.status != null and watch.status.name() == 'CRAWLING'} ? 'busy crawl-btn' : 'crawl-btn'"
+                th:text="${watch.status != null and watch.status.name() == 'CRAWLING'} ? '⏳ 수집 중' : '🔍 수집 실행'">
+        </button>
+      </form>
+      <a th:if="${watch.status != null and watch.status.name() == 'DONE'}"
+         th:href="@{'/items?watchId=' + ${watch.id}}"
+         class="link-button" style="background-color: #17a2b8;">
+        📂 결과 보기
+      </a>
+    </div>
+  </li>
+</ul>
+
+</body>
+</html>

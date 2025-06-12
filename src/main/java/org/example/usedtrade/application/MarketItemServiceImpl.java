@@ -28,6 +28,7 @@ public class MarketItemServiceImpl implements MarketItemService {
     return marketItemRepository.existsByLink(link);
   }
 
+  @Override
   public List<MarketItem> findByWatchIdSorted(Long watchId, String sort) {
     if ("priceDesc".equals(sort)) {
       return marketItemRepository.findByProductWatchIdOrderByPriceDesc(watchId);
@@ -35,6 +36,7 @@ public class MarketItemServiceImpl implements MarketItemService {
     return marketItemRepository.findByProductWatchIdOrderByPriceAsc(watchId);
   }
 
+  @Override
   public List<MarketItem> findAllSorted(String sort) {
     if ("priceDesc".equals(sort)) {
       return marketItemRepository.findAllByOrderByPriceDesc();
